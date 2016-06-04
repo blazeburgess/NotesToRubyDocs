@@ -456,3 +456,105 @@ h = {a: "ant", b: "bear", c: "cat"}
 h.keep_if {|k, v| v.length < 4}  #=> {a: "ant", c: "cat"} 
 
 #// `key` method
+#//     h.key(value) --> key
+#// Searches for value in hash, returns first instance if found, `nil` if
+#// not
+h = { "a" => 100, "b" => 200, "c" => 300, "d" => 300 }
+
+h.key(200)  #=> "b"
+h.key(300)  #=> "c"
+h.key(999)  #=> nil
+
+#// `key?` method
+#//     hash.key?(key) --> true || false
+#// Searches through hash for given key, returns boolean accordingly
+h = { "a" => 100, "b" => 200 }
+
+h.key?("a")  #=> true
+h.key?("z")  #=> false
+
+#// `keys` method
+#//     hash.keys --> array
+#// returns an array of all keys in hash
+h = { "a" => 100, "b" => 200, "c" => 300, "d" => 400 }
+
+h.keys    #=> ["a", "b", "c", "d"]
+
+#// `length` method
+#//     hash.length --> fixnum
+#// Returns number of k-v pairs in hash
+hash = { "d" => 100, "a" => 200, "v" => 300, "e" => 400 }
+
+h.length      #=> 4
+h.delete("a") #=> 200
+h.length      #=> 3
+
+#// `member?` method
+#//     hash.member?(key) --> true || false
+#// Returns boolean for given key's presence in hash. Does not test for
+#// member equality.
+h = { "a" => 100, "b" => 200 }
+
+h.has_key?("a")    #=> true
+h.has_key?("z")    #=> false
+
+#// `merge` method
+#//     hash.merge(other_hash) --> new_hash
+#//     hash.merge(other_hash) {|k, old_v, new_v| block} --> new_hash
+#// Returns a new hash containing the keys and values of the original and
+#// other hashes. In case of conflict where both hashes have the same key
+#// but different values, the value of the other_hash will overwrite that
+#// of the original.
+#//
+#// A user-written block can overwrite this behavior and calculate a new
+#// val in case of conflict
+h1 = { "a" => 100, "b" => 200 }
+h2 = { "b" => 254, "c" => 300 }
+
+h1.merge(h2)                             #=> {"a"=>100,"b"=>254,"c"=>300}
+h1.merge(h2) {|k, oldv, newv| newv-oldv} #=> {"a"=>100,"b"=>54,"c"=>300}
+h1                                       #=> {"a"=>100,"b"=>200}
+
+#// `merge!` method
+#//     hash.merge!(other_hash) --> hash ## modified
+#//     hash.merge!(other_hash) {|k, ov, nv| block} --> hash ## modified
+#// Adds contents from other_hash to hash, modifying the original. Other
+#// than this, functions the same as `merge`
+h1 = { "a" => 100, "b" => 200 }
+h2 = { "b" => 254, "c" => 300 }
+
+h1.merge!(h2)                            #=> {"a"=>100,"b"=>254,"c"=>300}
+h1                                       #=> {"a"=>100,"b"=>254,"c"=>300}
+
+h1 = { "a" => 100, "b" => 200 }
+h2 = { "b" => 254, "c" => 300 }
+h1.merge!(h2) {|k, oldv, newv| oldv}      #=> {"a"=>100,"b"=>200,"c"=>300}
+h1                                        #=> {"a"=>100,"b"=>200,"c"=>300}
+
+#// `rassoc` method
+#//     hash.rassoc(obj) --> an_array || nil
+#// Searches through the hash, making comparisons with `obj`. Returns the
+#// first instance of a k-v pair that matches
+a = { 1 => "one", 2 => "two", 3 => "three", 4 => "four" }
+
+a.rassoc("two")      #=> [2, "two"]
+a.rassoc("four")     #=> nil
+a.rassoc(2)          #=> nil
+
+#// `rehash` method
+#//     hash.rehash --> hash
+#// Rebuilds/reindexes the hash based around changes over the course of the
+#// program
+a = [ "a", "b" ]
+c = [ "c", "d" ]
+
+h = { a => 100, c => 300 }
+
+h[a]        #=> 100
+a[0] = "z"
+h[a]        #=> nil
+
+h.rehash    #=> { ["z", "b"] => 100, ["c", "d"] => 300 }
+h[a]        #=> 100
+
+#// `reject` method
