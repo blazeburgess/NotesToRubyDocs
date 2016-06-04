@@ -558,3 +558,145 @@ h.rehash    #=> { ["z", "b"] => 100, ["c", "d"] => 300 }
 h[a]        #=> 100
 
 #// `reject` method
+#//     hash.reject {|k, v| block} --> a_hash
+#//     hash.reject --> an_enumerator
+#// Returns a new hash for which the block conditions are false. Returns
+#// an enumerator if no block given
+h = { "a" => 100, "b" => 200, "c" => 300 }
+
+h.reject {|k,v| k < "b"}  #=> {"b" => 200, "c" => 300}
+h.reject {|k,v| v > 100}  #=> {"a" => 100}
+
+#// `reject!` method
+#//     h.reject! {|k,v| block} --> hash || nil
+#//     h.reject! --> an_enumerator
+#// Equivalent to `delete_if`, except that it returns `nil` if no changes
+#// were made
+h = { "a" => 100, "b" => 200, "c" => 300 }
+
+h.reject! {|k,v| v > 500 }   #=> nil
+h.reject! {|k,v| v < 200 }   #=> {"b"=>200,"c"=>300}
+h                            #=> {"b"=>200,"c"=>300}
+
+#// `replace` method
+#//     hash.replace(other_hash) --> hash
+#// Replaces the contents of `hash` with those of `other_hash`
+h = { "a" => 100, "b" => 200 }
+h.replace({ "c" => 300, "d" => 400 })   #=> {"c"=>300, "d"=>400}
+
+#// `select` method
+#//     hash.select {|k, v| block} --> a_hash
+#//     hash.select --> an_enumerator
+#// Returns a new hash made of elements from `hash` for which the block
+#// returned `true`. Returns an enumerator if no block given.
+h = { "a" => 100, "b" => 200, "c" => 300 }
+
+h.select {|k,v| k > "a"}         #=> {"b" => 200, "c" => 300}
+h.select {|k,v| v < 200}         #=> {"a" => 100}
+
+#// `select!` method
+#//     hash.select! {|key, value| block} --> hash || nil
+#//     hash.select! --> an_enumerator
+#// Equivalent to `keep_if` method except that `select!` returns `nil` if
+#// no changes are made.
+h = { "a" => 100, "b" => 200, "c" => 300 }
+
+h.select! {|k,v| k < "d"}  #=> nil
+h.select! {|k,v| k < "b"}  #=> {"a"=>100}
+
+#// `shift` method
+#//     hash.shift --> anArray || obj
+#// Deletes one k-v pair from hash and returns it as an array. Returns 
+#// default value if hash is empty
+h = { "a" => 100, "b" => 200, "c" => 300 }
+h.shift                 #=> ["a", 100]
+h                       #=> {"b"=>200, "c"=>300}
+
+a = {}
+a.shift                 #=> nil
+a                       #=> {}
+b = Hash.new("Go Fish") #=> {}
+b.shift                 #=> "Go Fish"
+
+#// `size` method
+#//     hash.size --> fixnum
+#// Returns number of k-v pairs in hash
+h = { "d" => 100, "a" => 200, "v" => 300, "e" => 400 }
+
+h.size             #=> 4
+h.delete("a")      #=> 200
+h.size             #=> 3
+
+#// `store` method
+#//     hash.story(key, value) --> value
+#// One method for element assignment in a hash. Returns the value
+h = { "a" => 100, "b" => 200 }
+
+h["a"] = 9
+h["c"] = 4
+h                     #=> {"a"=>9,"b"=>200,"c"=>4}
+
+h.store("d", 42)      #=> 42
+h                     #=> {"a"=>9,"b"=>200,"c"=>4,"d"=>42}
+
+h.store("a", 23)      #=> 23  ## overwrites previous `a` value
+h                     #=> {"a"=>23,"b"=>200,"c"=>4,"d"=>42}
+
+#// `to_a` method
+#//     hash.to_a --> array
+#// Converts hash to nested array
+h = { "c" => 300, "a" => 100, "d" => 400, "c" => 300 }
+h.to_a          #=> [ ["c", 300], ["a", 100], ["d", 400] ]
+
+#// `to_h` method
+#//     hash.to_h --> hash || new_hash
+#// Returns self or converts to hash object if called on a hash subclass
+{a: "ant"}.to_h           #=> {:a=>"ant"}
+
+#// `to_hash` method
+#//     hash.to_hash --> hash
+#// Returns `self`
+{b: "bat"}.to_h           #=> {:b=>"bat"}
+
+#// to_proc
+#// Returns error: undefined method on my version of irb
+#//
+#// `to_s` method
+#//     hash.to_s --> string
+#// Alias for `inspect` method
+h = {"a"=>23, "b"=>200, "c"=>4, "d"=>42}
+h.to_s               #=> "{\"a\"=>23, \"b\"=>200, \"c\"=>4, \"d\"=>42}"
+
+#// `update` method
+#//     hash.update(other_hash) --> hash
+#//     hash.update(other_hash) {|k, ov, nv| block} --> hash
+#// Adds contents of `other_hash` to `hash`. With no block give conflicting
+#// keys will overwrite `hash` values with those of `other_hash
+h1 = { "a" => 100, "b" => 200 }
+h2 = { "b" => 254, "c" => 300 }
+h1.update(h2)       #=> {"a"=>100, "b"=>254, "c"=>300}
+
+h1 = { "a" => 100, "b" => 200 }
+h2 = { "b" => 254, "c" => 300 }
+h1.update(h2) { |k, v1, v2| v1 } #=> {"a"=>100, "b"=>200, "c"=>300}
+
+#// `value?` method
+#//     hash.value?(value) --> true || false
+#// Returns boolean if the given value is found in `hash`
+h = { "a" => 100, "b" => 200 }
+
+h.value?(100)      #=> true
+h.value?(999)      #=> false
+
+#// `values` method
+#//     hash.values --> array
+#// Returns an array of `hash`'s values
+h = { "a" => 100, "b" => 200, "c" => 300 }
+
+h.values       #=> [100, 200, 300]
+
+#// `values_at` method
+#//     hash.values_at(key, ...) --> array
+#// Returns an array of values that have the corresponding keys
+h = { "cat" => "feline", "dog" => "canine", "cow" => "bovine" }
+h.values_at("cow", "cat")    #=> ["bovine", "feline"]
