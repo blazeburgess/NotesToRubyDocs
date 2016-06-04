@@ -383,4 +383,76 @@ h.fetch_values("cow", "cat")                  #=> ["bovine", "feline"]
 h.fetch_values("cow", "bird")                 # raises KeyError
 h.fetch_values("cow", "bird") {|k| k.upcase}  #=> ["bovine", "BIRD"]
 
+#// `flatten` method
+#//     hash.flatten --> an_array
+#//     hash.flatten(level) --> an_array
+#// returns a one-dimensional, flattened version of the hash as an array
+a = {1 => "one", 2 => [2, "two"], 3 => "three"}
+a.flatten     #=> [1, "one", 2, [2, "two"], 3, "three"]
+a.flatten(2)  #=> [1, "one", 2, 2 "two", 3, "three"]
 
+#// `has_key?` method
+#//     hash.has_key?(key) --> true || false
+#// Returns true if given key is in hash
+h = { "a" => 100, "b" => 200 }
+
+h.has_key?("a")  #=> true
+h.has_key?("z")  #=> false
+
+#// `has_value?` method
+#//     hash.has_value(value) --> true || false
+#// returns true if given value is in hash
+h = { "a" => 100, "b" => 200 }
+
+h.has_value?(100)    #=> true
+h.has_value?(999)    #=> false
+
+#// `hash` method
+#//     hash.hash --> fixnum
+#// Computes and return a hash-code for the object. Hash codes will be
+#// identical for identical hashes.
+a = {a: "ant", b: "bat"}
+b = {:a => "ant", :b => "bat"}
+c = {:a => "ant", :b => "bat", :c => "cat"}
+
+a.hash           #=> 3302772276800231924
+b.hash           #=> 3302772276800231924
+c.hash           #=> 183772604579862498
+
+a.hash == b.hash #=> true
+a.hash == c.hash #=> false
+b.hash == c.hash #=> false
+
+#// `include?` method
+#//     hash.include?(key) --> true || false
+#// Boolean check for given key. Doesn't test for member equality.
+h = { "a" => 100, "b" => 200 }
+
+h.include?("a")  #=> true
+h.include?("b")  #=> true
+h.include?(100)  #=> false
+h.include?(200)  #=> false
+
+#// `to_s` and `inspect` method
+#//     hash.to_s --> string
+#//     hash.inspect --> string
+h = { "c" => 300, "a" => 100, "d" => 400, "c" = 300 }
+h.to_s  #=> "{\"c\"=>300, \"a\"=>100, \"d\"=>400}"
+
+#// `invert` method
+#//     hash.invert --> { v => k }
+#// creates a new hash where the values of the original become the keys 
+#// of the new and the keys become the values
+h = { "n" => 100, "m" => 100, "y" => 300, "d" => 200, "a" => 0 }
+h.invert    #=> {0=>"a", 100=>"m", 200=>"d", 300=>"y"}
+
+#// `keep_if` method:
+#//     hash.keep_if {|key, value| block} --> hash
+#//     hash.keep_if --> an_enumerator
+#// Deletes any k-v pair for which the block returns to false. Returns
+#// an enumerator if no block given
+h = {a: "ant", b: "bear", c: "cat"}
+
+h.keep_if {|k, v| v.length < 4}  #=> {a: "ant", c: "cat"} 
+
+#// `key` method
