@@ -261,3 +261,126 @@ end
 
 h[2]      #=> #<Proc:0x...>
 h["cat"]  #=> #<Proc:0x...>
+
+#// `default_proc` method
+#//     hash.default_proc --> #<Proc:0x...> || nil
+#// returns the block created in Hash::new or `nil` if it wasn't so
+#// instantiated
+h = Hash.new {|h,k| h[k] = k*k}  #=> {}
+p = h.default_proc               #=> #<Proc:0x...>
+
+a = []                           #=> []
+p.call(a, 2)
+a                                #=> [nil, nil, 4]
+
+#// `default_proc =` method
+#//     hash.default_proc = proc_obj || nil --> proc_obj || nil
+h.default_proc = proc do |hash, key|
+  hash[key] = key + key
+end
+
+h[2]      #=> 4
+h["cat"]  #=> "catcat"
+
+#// `delete()` method
+#//     hash.delete(key) --> value
+#//     hash.delete(key) {|key| block} --> value
+#// deletes the k-v pair, returning the value
+h = { "a" => 100, "b" => 200 }
+
+h.delete("a")                            #=> 100
+h.delete("z")                            #=> nil
+h.delete("z") {|el| "#{el} not found"}   #=> "z not found"
+
+#// `delete_if` method
+#//     hash.delete_if {|key,value| block} --> hash
+#//     hash.delete_if --> an_enumerator
+#// deletes every k-v pair for which the block returns `true`
+h = { "a" => 100, "b" => 200, "c" => 200 }
+h.delete_if {|key, value| key >= "b" } #=> {"a"=>100}
+
+#// `dig()` method
+#//     hash.dig(key, ...) --> object
+#// extracts the nested value specified by the indexes given in sequence
+h = { foo: {bar: {baz: 1}} }
+
+h.dig(:foo, :bar, :baz)       #=> 1
+h.dig(:foo, :zot, :xyz)       #=> nil
+
+g = { foo: [10, 11, 12] }
+g.dig(:foo, 1)                #=> 11
+
+#// `each` and `each_pair` methods
+#//     hash.each {|key, value| block} --> block_output
+#//     hash.each_pair {|key, value| block} --> block_output
+#//     hash.each --> an_enumerator
+#//     hash.each_pair --> an _enumerator
+#// Affects every k and or v according to the block or returns an enumerator
+#// if no block is given
+h = { "a" => 100, "b" => 200 }
+h.each {|key, value| puts "#{key} is #{value}"}
+# prints:
+#     a is 100
+#     b is 200
+#
+#// `each_key` method
+#//     hash.each_key {|key| block} --> hash
+#//     hash.each_key --> an_enumerator
+#// Calls block on each key in hash with `key` as parameter. Returns 
+#// enumerator if no block given.
+h = { "a" => 100, "b" => 200 }
+h.each_key {|key| puts key}
+# returns:
+#     a
+#     b
+#
+#// `each_pair` method
+#// <The same as the `each` and `each_pair` methods above>
+h = { "a" => 300, "b" => 200 }
+h.each {|key, value| puts "#{key} is #{value}"}
+# prints:
+#     a is 300
+#     b is 200
+#
+#// `each_value` method
+#//     hash.each_value {|value| block} --> hash
+#//     hash.each_value --> enumerator
+#// Calls block once on each key in `hash` with `value` as parameter. 
+#// Returns an enumerator if 
+h = { "a" => 100, "b" => 200 }
+h.each value {|value| puts value }
+
+#// `empty?` method
+#//     hash.empty? --> true || false
+#// Self-evident
+{}.empty?          #=> true
+{a: "ant"}.empty?  #=> false
+
+#// `eql?` method
+#//     hash.eql?(other) --> true || false
+#// Returns true if the content of `hash` and `other` is the same. Not 
+#// compared by order. Examples above.
+#
+#// `fetch` method
+#//     hash.fetch(key [, default]) --> obj
+#//     hash.fetch(key) {|key| block} --> obj
+#// Returns a value from the hash for the given key or default value if
+#// input key is not in the hash
+h = { "a" => 100, "b" => 200 }
+
+h.fetch("a")                         #=> 100
+h.fetch("z", "go fish")              #=> "go fish"
+h.fetch("z") {|el| "go fish, #{el}"} #=> "go fish, z"
+
+#// `fetch_values` method
+#//     hash.fetch_values(key, ...) --> array
+#//     hash.fetch_values(key, ...) {|key| block} --> array
+#// Returns an array of values paired with the given keys, raises a KeyError
+#// if even a single key can't be found. Block modifies this.
+h = { "cat" => "feline", "dog" => "canine", "cow" => "bovine" }
+
+h.fetch_values("cow", "cat")                  #=> ["bovine", "feline"]
+h.fetch_values("cow", "bird")                 # raises KeyError
+h.fetch_values("cow", "bird") {|k| k.upcase}  #=> ["bovine", "BIRD"]
+
+
