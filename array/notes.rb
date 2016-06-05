@@ -722,4 +722,240 @@ a.index("z")                            #=> nil
 a.index {|x| x=="c"}                    #=> 2
 
 #// `initialize_copy` method
+#//     array.initialize_copy(other_array)  --> array
+#// Replaces content of `array` with that of `other_array`. If lengths are
+#// not equal, it truncates or expands `array` accordingly. Returns modified
+#// array.
+a = %w[a b c d e]                       #=> ["a", "b", "c", "d", "e"]
+
+# On my irb, this returns
+#     NoMethodError: private method `initialize_copy` called
+a.initialize_copy(%w[x y z])            #=> ["x","y","z"]
+a                                       #=> ["x", "y", "z"]
+
+#// `insert` method
+#//     array.insert(index, obj..)  --> array
+#// Inserts given values before element with given index.
+a = %w{ a b c d }
+
+a.insert(2, 99)                   #=> ["a", "b", 99, "c", "d"]
+a.insert(-2, 1, 2, 3)             #=> ["a", "b", 99, "c", 1, 2, 3, "d"]
+a = %w{ a b c d }
+a.insert(6, "e")                  #=> ["a", "b", "c" "d", nil, nil, "e"]
+
+#// `inspect` method
+#//     array.inspect  --> string
+#//     array.to_s     --> string
+#// Returns a string representation of the array
+[ "a", "b", "c" ].inspect         #=> "[\"a\", \"b\", \"c\"]
+
+[ "a", "b", "c" ].to_s            #=> "[\"a\", \"b\", \"c\"]
+
+#// `join` method
+#//     array.join(separator=$,)  --> string
+#// Creates and returns a string representation of array elements separated
+#// by the given separator (defaults to none)
+%w[ a b c ].join                  #=> "abc"
+%w[ a b c ].join("-")             #=> "a-b-c"
+
+#// `keep_if` method
+#//     array.keep_if {|item| block}  --> array
+#//     array.keep_if  --> Enumerator
+#// Deletes every element in `array` unless it meets block conditions, 
+#// returns enumerator if no block given.
+a = %w{ a b c d e f }
+
+a.keep_if {|v| v =~ /[aeiou]/}    #=> ["a", "e"]
+a                                 #=> ["a", "e"]
+
+#// `last` method
+#//     array.last  --> obj || nil
+#//     array.last(n)  --> new_array
+#// Returns the last or last `n` elements of an array. Returns nil if array
+#// is empty
+a = %w[ w x y z ]
+
+a.last                            #=> "z"
+a.last(2)                         #=> ["y", "z"]
+
+#// `length` method
+#//     array.length  --> int
+#// Returns number of elements in `array`
+[ 1, 2, 3, 4, 5 ].length          #=> 5
+[].length                         #=> 0
+
+#// `map` method
+#//     array.map {|item| block}  --> new_array
+#//     array.map  --> Enumerator
+#// Calls the block on each element of `array` once, returns new array of
+#// modified values
+a = %w[ a b c d ]
+
+a.map {|x| x + "!"}               #=> ["a!", "b!", "c!", "d!"]
+a.map.with_index {|x,i| x * i}    #=> ["", "b", "cc", "ddd"]
+a                                 #=> ["a", "b", "c", "d"]
+
+#// `map!` method
+#//     array.map! {|item| block}  --> array
+#//     array.map!  --> Enumerator
+#// Same as `map` method, but destructive of the original
+a = %w[ a b e f ]
+
+a.map! {|x| x + "!"}              #=> ["a!", "b!", "e!", "f!"]
+a                                 #=> ["a!", "b!", "e!", "f!"]
+
+#// `pack` method
+#//     array.pack(template_string)  --> binary_string
+#// Packs contents of `array` into a binary string via the `template_string`
+a = %w[ a b c ]
+n = [ 65, 66, 67 ]
+
+a.pack('A3A3A3')                  #=> "a b c "
+a.pack("a3a3a3")                  #=> "a\000\000b\000\000c\000\000"
+
+n.pack("ccc")                     #=> "ABC"
+
+#// `permutation` method
+#//     array.permutation {|p| block}  --> array
+#//     array.permutation  --> Enumerator
+#//     array.permutation(n) {|p| block}  --> array
+#//     array.permutation(n)  --> Enumerator
+#// Yields all permutations (combinations) of n length.
+a = [1, 2, 3]
+
+a.permutation.to_a                #=> [[1, 2, 3], [1, 3, 2], [2, 1, 3], 
+                                  # [2, 3, 1], [3, 1, 2], [3, 2, 1]]
+a.permutation(1).to_a             #=> [[1], [2], [3]]
+a.permutation(2).to_a             #=> [[1, 2], [1, 3], [2, 1], [2, 3], 
+                                  # [3, 1], [3, 2]]
+
+a.permutation(3).to_a             #=> [[1, 2, 3], [1, 3, 2], [2, 1, 3], 
+                                  # [2, 3, 1], [3, 1, 2], [3, 2, 1]]
+a.permutation(0).to_a             #=> [ [] ]
+a.permutation(4).to_a             #=> []
+        # Note: No idea how including a block changes the result. It comes
+        #   to the same result no matter if I treat the block as a boolean
+        #   or a modifier
+
+#// `pop` method
+#//     array.pop  --> obj || nil
+#//     array.pop(n)  --> new_array
+#// Removes and returns last element or last `n` elements from an array (nil
+#//if array is empty.
+a = %w[ a b c d ]
+
+a.pop                             #=> "d"
+a.pop(2)                          #=> ["b", "c"]
+a                                 #=> ["a"]
+
+#// `product` method
+#//     array.product(other_array, ...)  --> new_array
+#//     array.product(other_array, ...) {|p| block}  --> array
+#// Returns an array of all combinations of elements from mixing both 
+#// arrays. Length of the returned array is a product of of the length of 
+#// `array` and `other_array`
+[1, 2, 3].product([4, 5])         #=> [[1,4],[1,5],[2,4],[2,5],[3,4],[3,5]]
+[1, 2].product([1, 2])            #=> [[1,1],[1,2],[2,1],[2,2]]
+[1, 2].product([3, 4],[5,6])      #=> [[1,3,5],[1,3,6],[1,4,5],[1,4,6],
+                                  # [2,3,5],[2,3,6],[2,4,6]]
+[1,2].product()                   #=> [[1],[2]]
+[1,2].product([])                 #=> []
+
+#// `push` method
+#//     array.push(obj, ...)  --> array
+#// Appends object(s) to `array
+a = %w[ a b c ]
+
+a.push("d", "e", "f")             #=> ["a","b","c","d","e","f"]
+[1, 2, 3].push(4).push(5)         #=> [1, 2, 3, 4, 5]
+[1, 2, 3].push(4, 5, 6)           #=> [1, 2, 3, 4, 5, 6]
+
+#// `rassoc` method
+#//     array.rassoc(obj)  --> element_array || nil
+#// Searches through array and compares `obj` with each element (`==` 
+#// method). Returns first instance of a match
+a = [ [1, "one"], [2, "two"], [3, "three"], ["ii", "two"] ]
+
+a.rassoc("two")                   #=> [2, "two"]
+a.rassoc("four")                  #=> nil
+
+#// `reject` method
+#//     array.reject {|item| block}  --> new_array
+#//     array.reject  --> Enumerator
+#// Returns a new array of items for which the block evaluates false
+a = [1, 2, 3, 4, 5]
+
+a.reject {|n| n % 2 == 0 }        #=> [1, 3, 5]
+a                                 #=> [1, 2, 3, 4, 5]
+
+#// `reject!` method
+#//     array.reject! {|item| block}  --> array || nil
+#//     array.reject!  --> Enumerator
+#// Same as above, but is destructive
+a = [1, 2, 3, 4, 5]
+
+a.reject! {|n| n % 2 == 0 }       #=> [1, 3, 5]
+a                                 #=> [1, 3, 5]
+
+#// `repeated_combination`
+#//     array.repeated_combination(n) {|c| block}  --> array
+#//     array.repeated_combination(n)  --> Enumerator
+#// Yields all repeated combinations of length `n` elements from the array
+#// and returns the array itself.
+a = [1, 2, 3]
+
+a.repeated_combination(1).to_a  #=> [[1], [2], [3]]
+a.repeated_combination(2).to_a  #=> [[1,1],[1,2],[1,3],[2,2],[2,3][3,3]]
+a.repeated_combination(3).to_a  #=> [[1,1,1],[1,1,2],[1,1,3],[1,2,2],[1,2,
+                    # 3],[1,3,3],[2,2,2],[2,2,3],[2,3,3],[3,3,3]]
+a.repeated_combination(4).to_a  #=> [[1,1,1,1],[1,1,1,2],[1,1,1,3],[1,1,2,
+                    # 2],[1,1,3,3],[1,2,2,2],[1,2,2,3],[1,2,3,3],[1,3,3,3],
+                    # [2,2,2,2],[2,2,2,3],[2,2,3,3],[2,3,3,3],[3,3,3,3]]
+a.repeated_combination(0).to_a  #=> [ [] ]  // one combination fo lenth 0
+
+#// `repeated_permutation`
+#//     array.repeated_permutation(n) {|p| block}  --> array
+#//     array.repeated_permutation(n)  --> Enumerator
+#// Yields repeated permutations of length `n`.
+a = [1, 2]
+
+a.repeated_permutation(1).to_a  #=> [[1],[2]]
+a.repeated_permutation(2).to_a  #=> [[1,1],[1,2],[2,1],[2,2]]
+a.repeated_permutation(3).to_a  #=> [[1,1,1],[1,1,2],[1,2,1],[1,2,2],
+                       # [2,1,1],[2,1,2],[2,2,1],[2,2,2]]
+a.repeated_permutation(0).to_a  #=> [ [] ]  // one permutation of length 0
+
+#// `replace` method
+#//     array.replace(other_array)  --> array
+#// Reaplces contents of `array` with those of `other_array`
+a = %w[ a b c d e ]
+
+a.replace([ "x", "y", "z" ])    #=> ["x", "y", "z"]
+a                               #=> ["x", "y", "z"]
+
+#// `reverse` method
+#//     array.reverse  --> new_array
+#// Creates and returns an array of `array`'s elements, but in reverse order
+[ "a", "b", "c" ].reverse       #=> ["c", "b", "a"]
+[ 1 ].reverse                   #=> [1]
+
+#// `reverse!` method
+#//     array.reverse!  --> array_modified
+#// Same as last except destructive
+a = [ "a", "b", "c" ]
+
+a.reverse!                      #=> ["c", "b", "a"]
+a                               #=> ["c", "b", "a"]
+
+#// `reverse_each` method
+#//     array.reverse_each {|item| block}  --> array
+#//     array.reverse_each  --> Enumerator
+#// Same as `each`, but goes through `array` in reverse order
+a = ["a", "b", "c"]
+
+a.reverse_each {|x| print x, " -- "} # prints: "c -- b -- a -- "
+
+#// `rindex` method
+
+
 
