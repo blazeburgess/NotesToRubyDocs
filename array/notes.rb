@@ -480,3 +480,246 @@ array.count(4)                  #=> 1
 array.count {|x| x % 2 == 0}    #=> 3
 
 #// `cycle` method
+#//     array.cycle(n=nil) {|obj| block}  --> nil
+#//     array.cycle(n=nill)  --> Enumerator
+#// Calls given block on each element `n` number of times
+a = ["a", "b", "c"]
+
+a.cycle {|x| puts x}      # prints: a, b, c, a, b, c, a, b... forever.
+a.cycle(2) {|x| puts x}   # prints: a, b, c, a, b, c
+
+#// `delete` method
+#//     array.delete(obj)  --> item || nil
+#//     array.delete(obj) {block}  --> item || block_result
+#// Deletes all items from `array` that are equal to `obj`. If not found
+#// it returns nil (or the contents of the block, if given).
+a = ["a", "b", "b", "b", "c"]
+
+a.delete("b")                 #=> "b"
+a                             #=> ["a", "c"]
+
+a.delete("z")                 #=> nil
+a.delete("z") {"not found"}   #=> "not found"
+
+#// `delete_at` method
+#//     array.delete_at(index)  --> obj || nil
+#// Deletes and returns element at specified index
+a = ["ant", "bat", "cat", "dog"]
+
+a.delete_at(2)                   #=> "cat"
+a                                #=> ["ant", "bat", "dog"]
+
+a.delete_at(99)                  #=> nil
+
+#// `delete_if` 
+#//     array.delete_if {|item| block}  --> array_array
+#//     array.delete_if  --> Enumerator
+#// Deletes every element for which block returns true, returns modified
+#// array. Returns enumerator if no block given.
+scores = [ 97, 42, 75 ]
+scores.delete_if {|score| score < 80 }   #=> [97]
+scores                                   #=> [97]
+
+#// `dig` method
+#//     array.dig(index, ...)  --> obj
+#// Calls indicies in sequence on `array` and returns object when found. 
+#// Returns nil if any step is nil 
+a = [ [ 1, [2, 3] ] ]
+
+a.dig(0, 1, 1)                          #=> 3  // my irb returns undefined
+a.dig(1, 2, 3)                          #=> nil
+a.dig(0, 0, 0)                          #=> NoMethodError, undefined
+
+[42, {foo: :bar}].dig(1, :foo)          #=> :bar
+
+#// `drop` method
+#//     array.drop(n)  --> new_array
+#// Deletes first `n` elements from array, returns the remainder
+a = [1, 2, 3, 4, 5, 0]
+
+a.drop(3)                               #=> [4, 5, 0]
+a                                       #=> [1, 2, 3, 4, 5, 0]
+
+#// `drop_while` method
+#//     array.drop_while {|obj| block}  --> new_array
+#//     array.drop_while  --> Enumerator
+#// Drops elements up to (non-inclusive) the first element for which the 
+#// block returns nil or false. Returns an array of the remaining elements
+a = [1, 2, 3, 4, 5, 0]
+
+a.drop_while {|i| i < 3}                #=> [3, 4, 5, 0]
+a                                       #=> [1, 2, 3, 4, 5, 0]
+
+#// `each` method
+#//     array.each {|item| block}  --> array
+#//     array.each  --> Enumerator
+#// Calls the block on each element one with the element as parameter.
+a = ["a", "b", "c"]
+
+a.each {|x| print x, " -- "} # prints: "a -- b -- c --"
+                             #=> ["a", "b", "c"]
+
+#// `each_index` method
+#//    array.each_index {|index| block}  --> array
+#//    array.each_index  --> Enumerator
+#// Same as each, but passes index (instead of element) as parameter
+a = [ "a", "b", "c" ]
+a.each_index {|x| print x, " -- "} # prints: "0 -- 1 -- 2 -- "
+                                   #=> ["a", "b", "c"]
+
+#// `empty?` method
+#//     array.empty?  --> true || false
+#// Returns boolean value for whether or not `array` has no elements
+[].empty?                    #=> true
+[3].empty?                   #=> false
+
+#// `eql?` method
+#//     array.eql?(other_array)  --> true || false
+#// Returns boolean whether `array` and `other_array` are the same object
+a = [ 1, 2, 3 ]
+
+b = a
+a.eql?(b)                   #=> true
+
+b = [ 1, 2, 3 ]
+a.eql?(b)                   #=> true
+
+b = [ 3, 2, 1 ]
+a.eql?(b)                   #=> false
+
+b = [ 1, 3 ]
+a.eql?(b)                   #=> false
+
+b = "string"
+a.eql?(b)                   #=> false
+
+#// `fetch` method
+#//     array.fetch(index)  --> obj
+#//     array.fetch(index, default)  --> obj
+#//     array.fetch(index) {|index| block}  --> obj
+#// Attempts to return the element at `array`[`index`]. Throws IndexError
+#// if given index is out of bounds. This can be overridden by adding
+#// a second argument that acts as default. Block, if given, is referenced
+#// only when an invalid index is given.
+a = [ 11, 22, 33, 44 ]
+
+a.fetch(1)                                      #=> 22
+a.fetch(-1)                                     #=> 44
+a.fetch(4, 'cat')                               #=> "cat"
+a.fetch(100) {|i| put "#{i} is out fo bounds"}  #=> "100 is out of bounds"
+
+#// `fill` method
+#//     array.fill(obj)  --> array
+#//     array.fill(obj, start [, length])  --> array
+#//     array.fill(obj, range)  --> array
+#//     array.fill {|index| block}  --> array
+#//     array.fill(start [, length]) {|index| block}  --> array
+#//     array.fill(range {|index| block}  --> array
+#// First three above assign selected elements of `array` to `obj`. (`start`
+#// = nil) == (`start` = 0). (length = nil) == (length = array.length)
+#// Last three fill the array with the value of the given block, which
+#// takes the absolute index as parameter.
+a = [ "a", "b", "c", "d" ]
+
+a.fill("x")                               #=> ["x", "x", "x", "x"]
+a.fill("z", 2, 2)                         #=> ["x", "x", "z", "z"]
+a.fill("y", 0..1)                         #=> ["y", "y", "z", "z"]
+a.fill { |i| i * i }                      #=> [0, 1, 4, 9]
+a.fill(-2) {|i| i * i * i }               #=> [0, 1, 8, 27]
+
+#// `find_index` method
+#//     array.find_index(obj)  --> int || nil
+#//     array.find_index {|item| block}  --> int || nil
+#//     array.find_index  --> Enumerator
+#// Returns the index of the first object in `array` that is `==` `obj`
+a = [ "a", "b", "c" ]
+
+a.find_index("b")                         #=> 1
+a.find_index("z")                         #=> nil
+a.find_index {|x| x == "b" }              #=> 1
+
+#// `first` method
+#//     array.first  --> obj || nil
+#//     array.first(n)  --> new_array
+#// Returns first element or first `n` elements of `array`
+a = [ "q", "r", "s", "t" ]
+
+a.first                                  #=> "q"
+a.first(2)                               #=> ["q", "r"]
+
+#// `flatten` method
+#//     array.flatten  --> new_array
+#//     array.flatten(level)  --> new_array
+#// Returns a one-dimensional array by recursively flattening nested arrays
+s = [ 1, 2, 3 ]
+t = [ 4, 5, 6, [7, 8 ] ]
+
+a = [ s, t, 9, 10 ]                     #=> [[1,2,3],[4,5,6,[7,8]],9,10]
+a.flatten                               #=> [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+a                                       #=> [[1,2,3],[4,5,6,[7,8]],9,10]
+
+a = [ 1, 2, [3, [4, 5] ]                #=> [1, 2, [3, [4, 5]]]
+a.flatten(1)                            #=> [1, 2, 3, [4, 5]]
+a.flatten(2)                            #=> [1, 2, 3, 4, 5]
+a                                       #=> [1, 2, [3, [4, 5]]]
+
+#// `flatten!` method
+#//     array.flatten!  --> array || nil
+#//     array.flatten!(level)  --> array || nil
+#// Destructively flattens array, returns itself in modified form
+a = [ 1, 2, [3, [4, 5] ]                #=> [1, 2, [3, [4, 5]]]
+a.flatten!(1)                           #=> [1, 2, 3, [4, 5]]
+a                                       #=> [1, 2, 3, [4, 5]]
+
+a = [ 1, 2, [3, [4, 5] ]
+a.flatten!(2)                           #=> [1, 2, 3, 4, 5]
+a                                       #=> [1, 2, 3, 4, 5]
+
+#// `frozen?` method
+#//     array.frozen?  --> true || false
+#// Returns boolean for whether or not the array is frozen (cannot be 
+#// modified)
+a = [1, 2, 3]
+a.frozen?                               #=> false
+a.push(4, 5, 6)                         #=> [1, 2, 3, 4, 5, 6]
+
+a.freeze                                #=> [1, 2, 3, 4, 5, 6]
+a.frozen?                               #=> true
+a.push(7, 8, 9)                         #=> RuntimeError: Can't modify 
+                                        # frozen Array
+
+#// `hash` method
+#//     array.hash  --> fixnum
+#// Computes and returns a hash code for the array. Two arrays with the same
+#// content will have the same hash code.
+a = [1, 2, 3]
+a.hash                                  #=> -1120786499564221288
+
+b = [4, 5, 6]
+b.hash                                  #=> 4595764640030203890
+
+a.hash == [1, 2, 3].hash                #=> true
+
+#// `include` method
+#//     array.include?(obj)  --> true || false
+#// Returns boolean whether or not `obj` is present in `array`
+a = ["a", "b", "c"]
+
+a.include?("b")                         #=> true
+a.include?("z")                         #=> false
+
+#// `index` method
+#//     array.index(obj)  --> int || nil
+#//     array.index {|index| block}  --> int || nil
+#//     array.index  --> Enumerator
+#// Returns index of the first element of `array` that is == `obj`. If block
+#// the index of the first element for which the block evaluates true. If no
+#// block or argument, returns enumerator
+a = ["a", "b", "c"]
+
+a.index("b")                            #=> 1
+a.index("z")                            #=> nil
+a.index {|x| x=="c"}                    #=> 2
+
+#// `initialize_copy` method
+
