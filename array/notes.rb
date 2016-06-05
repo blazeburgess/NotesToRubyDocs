@@ -85,7 +85,7 @@ arr.insert(3, 'apple') #=> [0, 1, 2, 'apple', 3, 4, 5, 6]
 arr.insert(3, 'orange', 'pear', 'grapefruit') #=> [0, 1, 2, 'orange', 
                             #  'pear', 'grapefruit', 'apple', 3, 4, 5, 6]
 
-#// ## Removing Items from Array
+#// ### Removing Items from Array
 #// `pop`
 #// removes last item from array, returns that item
 arr = [1, 2, 3, 4, 5, 6]
@@ -124,4 +124,123 @@ arr             #=> ['foo', 0, 7, 'baz']
 arr = [2, 5, 6, 556, 6, 6, 8, 9, 0, 123, 556]
 arr.uniq     #=> [2, 5, 6, 556, 8, 9, 0, 123]
 
+#// ## Iterating over Arrays
+#//
+#// `each` method
+#//     arr.each {|val| block}  --> arr
+#//     arr.each do |val
+#//         #code here
+#//     end                     --> arr
+#//     arr.each                --> an_enumerator
+#// Executes block on the values of `arr`, returns the original arr. If no
+#// block given, returns an enumerator.
+arr = [1, 2, 3, 4, 5]
+
+arr.each { |a| print a -= 10, " "}  # prints: "-9 -8 -7 -6 -5"
+                                    #=> [1, 2, 3, 4, 5]
+arr.each do |a|
+  print a -= 10, " "
+end                                 # equivalent statement
+
+arr.each                            #=> #<Enumerator: [1, 2, 3, 4, 5]:each>
+
+arr                                 #=> [1, 2, 3 , 4 ,5]
+
+#// `reverse_each` method
+#//     arr.reverse_each {|val| block}    --> arr
+#//     arr.reverse_each                  --> an_enumerator
+#// Iterates over the array in reverse order
+words = %w[first second third fourth fifth sixth]
+words           #=> ["first", "second", "third", "fourth", "fifth", "sixth"]
+
+str = ""
+words.reverse_each { |word| str +=  "#{word} " }
+str        #=> "sixth fifth fourth third second first"
+
+#// `map` and `map!` method
+#//      arr.map { |val| block }    --> new_array
+#//      arr.map! { |val| block }   --> modified_arr
+#//      arr.map                    --> enumerator
+#// Non-destructive and destructive, respectively, method to return a new
+#// array with values modified by the block statement. If no block given,
+#// returns an enumerator
+arr = [1, 2, 3, 4, 5]
+
+arr.map { |a| 2*a }      #=> [2, 4, 6, 8, 10]
+arr                      #=> [1, 2, 3, 4, 5]
+arr.map! { |a| a**2 }    #=> [1, 4, 9, 16, 25]
+arr                      #=> [1, 4, 9, 16, 25]
+
+#// ## Selecting Items from an Array
+#//
+#// Non-destructive selection
+arr = [1, 2, 3, 4, 5, 6]
+arr.select { |a| a > 3 }     #=> [4, 5, 6]
+arr.reject { |a| a < 3 }     #=> [3, 4, 5, 6]
+arr.drop_while { |a| a < 4 } #=> [4, 5, 6]
+
+arr                          #=> [1, 2, 3, 4, 5, 6]
+
+#// Destructive selection
+arr = [1, 2, 3, 4, 5, 6]
+arr.delete_if { |a| a < 4 }  #=> [4, 5, 6]
+arr                          #=> [4, 5, 6]
+
+arr = [1, 2, 3, 4, 5, 6]
+arr.keep_if { |a| a < 4 }    #=> [1, 2, 3]
+arr                          #=> [1, 2, 3]
+
+arr = [1, 2, 3, 4, 5, 6]
+arr.select! { |a| a > 2 }    #=> [3, 4, 5, 6]
+arr                          #=> [3, 4, 5, 6]
+
+arr = [1, 2, 3, 4, 5, 6]
+arr.reject! { |a| a > 2 }    #=> [1, 2]
+
+#// ## Public Class Methods
+#// `[]` method
+#//     Array.[](*args)  --> new_array
+#// Creates and populates a new array with given `args`
+Array.[](1, 'a', /^A/)       #=> [1, "a", /^A/]
+Array[ 1, 'a', /^A/ ]        #=> [1, "a", /^A/]
+[ 1, 'a', /^A/ ]             #=> [1, "a", /^A/]
+
+#// `new` method
+#//     Array.new(size=0, default=nil)     --> an_array
+#//     Array.new(array)                   --> array
+#//     Array.new(size) {|index| block}    --> an_array
+#//     Array.new                          --> []
+#// Creates and populates an array according to inputs
+first_array = ["Matz", "Guido"]
+second_array = Array.new(first_array)#=> ["Matz", "Guido"]
+first_array.equal? second_array      #=> false // b/c s_a is a copy
+Array.new(3) { |index| index ** 2 }  #=> [0, 1, 4]
+
+#// The second parameter in `new` creates the same object, which can lead
+#// to assignment issues
+a = Array.new(2, Hash.new)           #=> [ {}, {} ]
+a[0]['cat'] = 'feline'
+a                                    #=>[{"cat"=>"feline"},{"cat"=>"feline}]
+a[1]['cat'] = 'Felix'
+a                                    #=>[{"cat"=>"Felix"},{"cat"=>"Felix"}]
+
+#// To avoid these assignment issues, simply use the block form
+a = Array.new(2) { Hash.new }
+a[0]['cat'] = 'feline'
+a                                    #=> [{"cat"=>"feline"}, {}]
+
+#// `try_convert` method
+#//     Array.try_convert(obj)  --> array || nil
+#// attempts to convert the object to an array, returns that array if
+#// successful, returns nil if it fails
+Array.try_convert([1])      #=> [1]
+Array.try_convert("1")      #=> nil
+
+if tmp = Array.try_convert(arg)
+  # the argument is an array
+elsif tmp = String.try_convert(arg)
+  # the argument is a string
+end
+
+#// ## Public Instance Methods
 
