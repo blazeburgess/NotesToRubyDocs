@@ -956,6 +956,280 @@ a = ["a", "b", "c"]
 a.reverse_each {|x| print x, " -- "} # prints: "c -- b -- a -- "
 
 #// `rindex` method
+#//     array.rindex(obj)  --> int || nil
+#//     array.rindex {|item| block}  --> int || nil
+#//     array.rindex  --> Enumerator
+#// Returns the index of the last element in `array` to equal `obj` or 
+#// have the block return `true`
+a = [ "a", "b", "b", "b", "c" ]
+
+a.rindex("b")                   #=> 3
+a.rindex("z")                   #=> nil
+a.rindex { |x| x == "b" }       #=> 3
+
+#// `rotate` method
+#//     array.rotate(count=1)  --> new_array
+#// Returns a new array by rotating `array` according to the count. If the 
+#// count is negative, it rotates in reverse order
+a = %w[ a b c d ]
+
+a.rotate                        #=> ["b", "c", "d", "a"]
+a                               #=> ["a", "b", "c", "d"]
+a.rotate(2)                     #=> ["c", "d", "a", "b"]
+a.rotate(-3)                    #=> ["b", "c", "d", "a"]
+
+#// `rotate!` method
+#//     array.rotate!(count = 1)  --> new_array
+#// Same as above, but destructive
+a = [ "a", "b", "c", "d" ]
+
+a.rotate!                       #=> ["b", "c", "d", "a"]
+a                               #=> ["b", "c", "d", "a"]
+a.rotate!(2)                    #=> ["d", "a", "b", "c"]
+a.rotate!(-3)                   #=> ["a", "b", "c", "d"]
+
+#// `sample` method
+#//     array.sample  --> obj
+#//     array.sample(rarndom: rng)  --> obj
+#//     array.sample(n)  --> new_array
+#//     array.sample(n, random: rng)  --> new_array
+#// Chooses a random element or `n` random elements from the array
+a = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+
+a.sample                        #=> 7
+a.sample(4)                     #=> [6, 4, 2, 5]
+
+#// `select` method
+#//     array.select {|item| block} --> new_array
+#//     array.select  --> new_array
+#// Returns an array of elements from `array` for which the block evaluates
+#// true
+[1,2,3,4,5].select { |num| num.even? }  #=> [2, 4]
+
+a = %w{ a b c d e f }
+
+a.select { |v| v =~ /[aeiou]/ }         #=> ["a", "e"]
+a                                       #=> ["a", "b", "c", "d", "e", "f"]
+
+#// `select!` method
+#//     array.select! {|item| block} --> new_array
+#//     array.select!  --> new_array
+#// Same as above, but destructive
+a = %w[ a b c d e f ]
+
+a.select { |v| v =~ /[aeiou]/ }         #=> ["a", "e"]
+a                                       #=> ["a", "e"]
+
+#// `shift` method
+#//     array.shift  --> obj || nil
+#//     array.shift(n)  --> new_array
+#// Removes the first element from `array`, returns the rest. Returns nil
+#// if array is empty
+args = [ "-m", "-q", "filename" ]
+
+args.shift                          #=> "-m"
+args                                #=> ["-q", "filename"]
+
+args = [ "-m", "-q", "filename" ]
+
+args.shift(2)                       #=> ["-m", "-q"]
+args                                #=> ["filename"]
+
+#// `shuffle` method
+#//     array.shuffle  --> new_array
+#//     array.shuffle(random: rng)  --> new_array
+#// Creates and returns an array of `array`'s elements randomly shuffled
+a = [ 1, 2, 3 ]
+
+a.shuffle                          #=> [1, 3, 2]   // the output varies
+a                                  #=> [1, 2, 3]
 
 
 
+#// `shuffle!` method
+#//     array.shuffle!  --> new_array
+#//     array.shuffle!(random: rng)  --> new_array
+#// Same as above, but destructive
+a = %w[ a b c ]
+
+a.shuffle!                         #=> ["b", "a", "c"] // output varies
+a                                  #=> ["b", "a", "c"]
+
+#// `size` method
+#//     array.size()  --> fixnum
+#// Alias for `length` method. Can be called with or w/o `()`s
+[1, 2, 3].size                     #=> 3
+
+a = %w[ a b c d e f ]
+a.size()                           #=> 6
+
+#// `slice` method
+#//     array.slice(index)  --> obj || nil
+#//     array.slice(start, length)  --> new_array || nil
+#//     array.slice(range)  --> new_array || nil
+#// Returns element at `index` or sub-array from `start` to `length` (or 
+#// `range`). Returns nil for nonexistent indices
+a = %w[ a b c d e ]
+
+a.slice(2) + a.slice(0) + a.slice(1)    #=> "cab
+a                                       #=> ["a", "b", "c", "d", "e"]
+
+a.slice(1, 3)                           #=> ["b", "c", "d"]
+a.slice(1..2)                           #=> ["b", "c"]
+a.slice(6..10)                          #=> nil
+a                                       #=> ["a", "b", "c", "d", "e"]
+
+#// `slice!` method
+#//     array.slice!(index)  --> obj || nil
+#//     array.slice!(start, length)  --> new_array || nil
+#//     array.slice!(range)  --> new_array || nil
+#// Same as above, but deletes returned element from `array`
+a = ["a", "b", "c"]
+
+a.slice!(1)                       #=> "b"
+a                                 #=> ["a", "c"]
+
+a.slice!(-1)                      #=> "c"
+a                                 #=> ["a"]
+
+a.slice(100)                      #=> nil
+a                                 #=> ["a"]
+
+#// `sort` method
+#//     array.sort  --> new_array
+#//     array.sort {|a, b| block}  --> new_array
+#// Returns a new array from sorting `array`'s elements. Comparisons are 
+#// made with the `<=>` operator
+a = [ "d", "a", "e", "c", "b" ]
+
+a.sort                            #=> ["a", "b", "c", "d", "e"]
+a.sort { |x,y| y <=> x }          #=> ["e", "d", "c", "b", "a"]
+a                                 #-> ["d", "a", "e", "c", "b"]
+
+#// `sort!` method
+#//     array.sort!  --> new_array
+#//     array.sort! {|a, b| block}  --> new_array
+#// Same as above, but destructive
+a = ["d", "a", "e", "c", "b"]
+
+a.sort!                           #=> ["a", "b", "c", "d", "e"]
+a                                 #=> ["a", "b", "c", "d", "e"]
+
+#// `sort_by!` method
+#//     array.sort_by! {|obj| block}  --> array
+#//     array.sort_by!  --> Enumerator
+#// Sorts arraay by using a set of keys made by mapping `array`'s values
+#// through the given block.
+a = ["c", "e", "b", "d", "a"]
+
+
+               # Note: Don't really understand this one. 
+               #   Will have to revise later. No block I
+               #   give it returns a result that makes 
+               #   sense given the above definition.
+
+#// `take` method
+#//     array.take(n)  --> new_array
+#// Returns first `n` elements of the array
+a = [1, 2, 3, 4, 5, 0]
+
+a.take(3)                       #=> [1, 2, 3]
+
+#// `take_while` method
+#//     array.take_while {|obj| block}  --> new_array
+#//     array.take_while  --> Enumerator
+#// Returns elements from `array` from index 0 until the block evaluates
+#// false.
+a = [1, 2, 3 , 4, 5, 0]
+
+a.take_while { |i| i < 3 }      #=> [1, 2]
+a.take_while { |i| i < 1 }      #=> []
+
+#// `to_a` method
+#//     array.to_a  --> array
+#// Returns original array. If called on subclass of Array, reverts class
+#// to Array.
+[1, 2, 3].to_a                  #=> [1, 2, 3]
+
+#// `to_ary` method
+#//     array.to_ary  --> array
+#// Returns original array. If called on subclass of Array, reverts class
+#// to Array.
+[1, 2, 3].to_ary                  #=> [1, 2, 3]
+
+#// `to_h` method
+#//     array.to_h  --> hash
+#// Returns a hash interpretation of array, converting into k-v pairs
+[[:foo, :bar], [1, 2]].to_h       #=> {:foo => :bar, 1 => 2}
+
+["one", 1, "two", 2].to_h         #=> TypeError: wrong element type
+[1, 1, 2, 2].to_h                 #=> TypeError: wrong element type
+
+#// `to_s` method
+#//     array.to_s  --> string
+#// Alias for `inspect`
+[1, 2, 3].to_s                             #=> "[1, 2, 3]"
+["a", "b", "c", "d", "e", "f", "g"].to_s() #=> "[\"a\", \"b\", \"c\", 
+                          # \"d\", \"e\", \"f\", \"g\"]"
+
+#// `transpose` method
+#//     array.transpose  --> new_array
+#// Assumes `array` is an array of arrays and transposes rows and columns
+a = [[1,2], [3,4], [5,6]]
+a.transpose                      #=> [ [1, 3, 5], [2, 4, 6] ]
+
+#// `uniq` method
+#//     array.uniq  --> new_array
+#//     array.uniq {|item| ...}  --> new_array
+#// Removes duplicate values and returns new array of the remainder
+a = [ "a", "a", "b", "b", "c" ]
+a.uniq                          #=> ["a", "b", "c"]
+a                               #=> ["a", "a", "b", "b", "c"]
+
+b = [["student", "sam"], ["student", "george"], ["teacher", "matz"]]
+b.uniq {|s| s.first}            #=> [["student","sam"],["teacher","matz"]]
+
+#// `uniq!` method
+#//     array.uniq!  --> new_array
+#//     array.uniq! {|item| ...}  --> new_array
+#// Same as above, but destructive
+a = [ "a", "a", "b", "b", "c", "d", "d" ]
+
+a.uniq!                         #=> ["a", "b", "c", "d"]
+a                               #=> ["a", "b", "c", "d"]
+
+#// `unshift` method
+#//     array.unshift(obj, ...)  --> array
+#// Prepends objects to `array`
+a = [ "b", "c", "d" ]
+
+a.unshift("a")                  #=> ["a", "b", "c", "d"]
+a.unshift(1, 2)                 #=> [1, 2, "a", "b", "c", "d"]
+
+#// `values_at` method
+#//     array.values_at(selector, ...)  --> new_array
+#// Returns array made from the the values at corresponding indicies
+a = %w[ a b c d e f ]
+
+a.values_at(1, 3, 5)            #=> ["b", "d", "f"]
+a.values_at(1, 3, 5, 7)         #=> ["b", "d", "f", nil]
+a.values_at(-1, -2, -2, -7)     #=> ["f", "e", "e", nil]
+a.values_at(4..6, 3..6)         #=> ["e", "f", nil, "d", "e", "f"]
+
+#// `zip` method
+#//     array.zip(arg, ...)  --> new_array
+#//     array.zip(arg, ...) {|arr| block}  --> new_array
+#// Converts arguments to arrays, then merges elements of `array` with 
+#// elements from each argument
+a = [ 4, 5, 6 ]
+b = [ 7, 8, 9 ]
+
+[1, 2, 3].zip(a, b)             #=> [[1, 4, 7], [2, 5, 8], [3, 6, 9]]
+[1, 2].zip(a, b)                #=> [[1, 4, 7], [2, 5, 8]]
+a.zip([1, 2], [8])              #=> [[4, 1, 8], [5, 2, nil], [6, nil, nil]]
+
+#// `|` operator
+#//     array | other_array  --> new_array
+#// Makes a new array from combining two provided, excluding duplicate 
+#// values and preserving order.
+[ "a", "b", "c" ] | [ "c", "d", "a" ]  #=> [ "a", "b", "c", "d" ]
